@@ -1,0 +1,96 @@
+---
+title: "Zachary Muller Lab 2"
+---
+# Task 1
+```{r}
+getwd()
+```
+
+# Task 2
+```{r}
+ddt <- read.csv("EPAGAS-1.csv")
+ddt6 <- head(ddt, 6)
+ddt6
+```
+
+# Task 3
+## Vector form
+```{r}
+mpgvect <- ddt$MPG
+```
+## transforming mpg into z
+```{r}
+z <- (mpgvect - mean(mpgvect))/sd(mpgvect)
+```
+
+## Verify z-bar == 0
+```{r}
+print(paste0("z-bar = ", round(mean(z), digits=4)), quote=FALSE)
+```
+
+## Verify sz ^2 is 1
+```{r}
+print(paste0("sz^2 = ", var(z)), quote=FALSE)
+```
+
+## Possible Outliers between [2,3] standard deviations 
+```{r}
+mpgvect[abs(z) >= 2 & abs(z) <=3]
+```
+
+## Possible outliers in z greater than 3
+```{r}
+mpgvect[abs(z)>3]
+```
+
+## Use lattice library to construct a plot
+```{r}
+library(lattice)
+mycol = ifelse(abs(z)>3, "Red",
+        ifelse(abs(z)>=2 &abs(z)<=3,"Blue", "Black"))  
+lattice::dotplot(mpgvect, cols=mycol)
+```
+
+# Task 4
+## Box plot of MPG
+```{r}
+boxplot(mpgvect, notch = T, horizontal = T, col= "Black", main="Boxplot of MPG")
+```
+
+## ChebyShev pediction 
+The proportion of data within 2 standard deviations of mean should be 75% of the data
+k = 2
+1/2^2 = 1/4 = 25% are more than k deviations from the mean 
+
+
+## Calculate exact proportion using R
+```{r}
+proportion <- mpgvect[abs(z) <= 2]
+print(paste0(length(proportion),"% of data is within 2 standard deviations"))
+```
+
+## Does Chebyshev agree with the data?
+```{r}
+mean(abs(z- mean(z)) >= 2*sd(z)) <= 1/4
+```
+Yes, he does.
+
+## Empirical Rule proportions
+The empirical rule states that 95% of data should be within two standard deviations 
+
+## How well does it correspond?
+It corresponds well. We saw that 96% of data in our dataset is within two standard deviations. 
+
+## Is the empirical rule valid in this case? Why?
+The rule states that there are two assumptions.
+1. It is unimodel 
+2. It has symmetric distribution
+
+Both of the assumptions hold for this case, therefore the empirical rule is valid. 
+
+
+
+
+
+
+

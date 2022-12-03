@@ -1,0 +1,170 @@
+---
+title: "Lab6"
+author: "Zachary Muller"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Q1
+
+```{r}
+getwd()
+```
+
+# Q2
+
+- Four normal curves
+
+```{r}
+matrix1 = matrix(c(1,2,3,4),2,2,TRUE)
+layout(matrix1, c(2,2),c(2,2))
+curve(dnorm(x,10,4),xlim=c(10-(12),10+(12)))
+curve(dnorm(x,10,2),xlim=c(10-6,10+(6)))
+curve(dnorm(x,5,10),xlim=c(5-(30),5+(30)))
+curve(dnorm(x,5,.5),xlim=c(5-(3*.5),5+(3*.5)))
+```
+
+- Plotting regions 
+
+```{r}
+mean = 0
+sd = 1
+a = 2
+b = mean+(3*sd)
+curve(dnorm(x,mean=mean,sd = sd), xlim = c(mean-(3*sd), mean+(3*sd)))
+xcurve = seq(a,b, length=1000)
+ycurve = dnorm(xcurve, 0, 1)
+polygon(c(a,xcurve,b),c(0,ycurve,0),col="Blue")
+
+```
+
+```{r}
+mean = 4
+sd = 2
+a = 1
+b = 4.99999
+curve(dnorm(x,mean=mean,sd = sd), xlim = c(mean-(3*sd), mean+(3*sd)))
+xcurve = seq(a,b, length=1000)
+ycurve = dnorm(xcurve, mean, sd)
+polygon(c(a,xcurve,b),c(0,ycurve,0),col="Blue")
+```
+
+
+```{r}
+mean = 10 
+sd = 4
+a = -6
+b = 10 
+curve(dnorm(x,mean=mean,sd = sd), xlim = c(mean-(3*sd), mean+(3*sd)))
+xcurve = seq(a,b, length=1000)
+ycurve = dnorm(xcurve, mean, sd)
+polygon(c(a,xcurve,b),c(0,ycurve,0),col="Blue")
+```
+
+
+```{r}
+mean = -2 
+sd = .5
+a = -3
+b = -2 
+curve(dnorm(x,mean=mean,sd = sd), xlim = c(mean-(3*sd), mean+(3*sd)))
+xcurve = seq(a,b, length=1000)
+ycurve = dnorm(xcurve, mean, sd)
+polygon(c(a,xcurve,b),c(0,ycurve,0),col="Blue")
+```
+
+# Q3
+
+- Study Gamma distr. 
+
+```{r}
+curve(dgamma(x,1,1),xlim=c(0,10),ylim=c(0,1))
+curve(dgamma(x,3,1),xlim=c(0,10),ylim=c(0,1),add=TRUE)
+curve(dgamma(x,5,1),xlim=c(0,10),ylim=c(0,1),add=TRUE)
+```
+
+```{r}
+curve(dgamma(x,shape=3,scale=2),xlim=c(0,10),ylim=c(0,1))
+polygon(c(2,seq(2,5, length=10000),5),c(0,dgamma(seq(2,5, length=10000),shape =3,scale=2),0),col="red")
+
+curve(dgamma(x,shape=6,scale=3),xlim=c(0,10),ylim=c(0,.05))
+polygon(c(1,seq(1,4, length=10000),4),c(0,dgamma(seq(1,4, length=10000),shape=6,scale=3),0),col="red")
+
+curve(dgamma(x,shape=2,scale=4),xlim=c(0,10),ylim=c(0,.05))
+polygon(c(3,seq(3,6, length=10000),6),c(0,dgamma(seq(3,6, length=10000),shape=2,scale=4),0),col="red")
+```
+
+# Q4
+
+```{r}
+layout(matrix(c(1,2,3,4),2,2,TRUE),c(2,2),c(2,2))
+curve(dchisq(x,1),xlim=c(0,10),ylim=c(0,1)) #   Y∼chisq(df=1)
+curve(dchisq(x,2),xlim=c(0,10),ylim=c(0,1)) # Y∼chisq(df=2)
+curve(dchisq(x,4),xlim=c(0,10),ylim=c(0,1)) # Y∼chisq(df=4)
+curve(dchisq(x,20),xlim=c(0,10),ylim=c(0,1))# Y∼chisq(df=20)
+```
+
+```{r}
+curve(dchisq(x,2),xlim=c(0,10),ylim=c(0,1))
+polygon(c(2,seq(2,4,length=1000),4),c(0,dchisq(seq(2,4,length=1000),2),0),col = "brown")
+
+curve(dchisq(x,3),xlim=c(0,10),ylim=c(0,1))
+polygon(c(3,seq(3,5,length=1000),5),c(0,dchisq(seq(3,5,length=1000),3),0),col = "brown")
+
+curve(dchisq(x,20),xlim=c(4,25),ylim=c(0,.3))
+polygon(c(10,seq(10,21,length=1000),21),c(0,dchisq(seq(10,21,length=1000),20),0),col = "brown")
+```
+
+# Q5
+
+- 
+
+```{r}
+layout(matrix(c(1,2,3,4),2,2,TRUE))
+curve(dweibull(x,1,11),xlim=c(0,10),ylim=c(0,1))
+curve(dweibull(x,2,22),xlim=c(0,10),ylim=c(0,1))
+curve(dweibull(x,3,33),xlim=c(0,10),ylim=c(0,1))
+curve(dweibull(x,4,44),xlim=c(0,10),ylim=c(0,1))
+```
+
+
+```{r}
+
+curve(dweibull(x,1,1),xlim=c(0,10),ylim=c(0,1))
+polygon(c(3,seq(3,1000),21),c(0,dweibull(seq(3,1000),1,1),0),col="Grey")
+
+curve(dweibull(x,2,4),xlim=c(0,10),ylim=c(0,1))
+polygon(c(0,seq(1,1000),10),c(0,dweibull(seq(1,1000),2,4),0),col="Grey")
+
+curve(dweibull(x,6,7),xlim=c(0,10),ylim=c(0,1))
+polygon(c(0,seq(1,1000),10),c(0,dweibull(seq(1,1000),6,7),0),col="Grey")
+```
+
+# Q6 
+
+- Investigating beta distribution
+
+```{r}
+layout(matrix(c(1, 2, 3, 4),2,2,TRUE),heights = c(2, 2),widths = c(2, 2))
+curve(dbeta(x,shape1 = 1, shape2 = 2),xlim=c(0,1), col="Blue")
+curve(dbeta(x,shape1 = 2, shape2 = 3),xlim=c(0,1), col="Blue")
+curve(dbeta(x,shape1 = 3, shape2 = 4),xlim=c(0,1), col="Blue")
+curve(dbeta(x,shape1 = 5, shape2 = 6),xlim=c(0,1), col="Blue")
+```
+```{r}
+curve(dbeta(x,shape1 = 1, shape2 = 2),xlim=c(0,1))
+```
+
+# Q7
+```{r}
+packagedeal::myncurve(mu=10,sigma=5)
+```

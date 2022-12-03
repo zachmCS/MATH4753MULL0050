@@ -1,0 +1,111 @@
+---
+title: "Zachary Muller Lab1"
+---
+knitr::opts_chunk$set(echo = TRUE)
+
+# TASK 1
+```{r}
+getwd()
+```
+
+# TASK 2
+```{r}
+ddt = read.csv("DDT.csv")
+head(ddt)
+```
+# TASK 3
+### qualitative variables: RIVER, SPECIES
+### quantitative: MILE, LENGTH, WEIGHT, DDT
+### There are 3 unique species
+
+## subset for LMBASS > 800:
+```{r}
+subset(ddt, ddt$SPECIES=="LMBASS" & ddt$WEIGHT > 800)
+```
+## subset for river SCM and ddt > 4.0
+```{r}
+subset(ddt, ddt$RIVER=="SCM" & ddt$DDT>4.0)
+```
+
+## Clicker Questions
+mean length: 42.81
+standard dev: 376.5461
+no
+last value: 1.00
+
+# TASK 4
+## Rivers table
+```{r}
+table(ddt$RIVER)
+```
+## rivers bar plot
+```{r}
+barplot(with(ddt,table(RIVER)),col=1:4, xlab = "Rivers", ylab = "# of fish measured")
+```
+## table of rivers and species
+```{r}
+data <- with(ddt,table(RIVER, SPECIES))
+data
+```
+## barplot of rivers and species
+```{r}
+data <- with(ddt,table(RIVER, SPECIES))
+barplot(data,ylim = c(0, 100), col=1:4,beside = T, legend.text = c("FCM", "LCM", "SCM", "TRM"), xlab = "Species", ylab = "# of fish measured", args.legend = list(x="topleft",title="Rivers"))
+```
+
+# TASK 5
+## Pie chart for species 
+```{r}
+species <- with(ddt, table(SPECIES))
+pie(species,col = 1:3,main = "Species distribution")
+```
+## pie chart for rivers
+```{r}
+rivers <- with(ddt, table(RIVER))
+  pie(rivers,col = 1:4,main = "Distribution of rivers where fish were measured")
+```
+
+# TASK 6
+## barplots for DDT, weight, and length
+```{r}
+layout(matrix(c(1,2,3),nr=1,nc=3))# 1 row 3 cols
+with(ddt,boxplot(LENGTH,ylab="LENGTH",col="Blue",notch=TRUE))
+with(ddt,boxplot(WEIGHT,ylab="WEIGHT",col="Red",notch=TRUE))
+with(ddt,boxplot(DDT,ylab="DDT",col="Green",notch=TRUE))
+```
+
+# TASK 7
+## Length VS Weight
+```{r}
+coplot(LENGTH~WEIGHT|RIVER,data=ddt)
+```
+## DDT VS Weight
+```{r}
+coplot(DDT~WEIGHT|SPECIES,data=ddt)
+```
+
+# TASK 8
+## Bar
+```{r}
+library(ggplot2)
+plt <- ggplot(ddt, aes(x=SPECIES, y=WEIGHT, fill=RIVER)) + 
+  geom_boxplot() + ggtitle(label = "ZACHARY MULLER")
+plt
+```
+
+## VIOLIN
+```{r}
+library(ggplot2)
+plt <- ggplot(ddt, aes(x=RIVER, y=LENGTH, fill = SPECIES)) + 
+  geom_violin() + ggtitle("ZACHARY MULLER")
+plt
+```
+## SCATTER
+```{r}
+library(ggplot2)
+plt <- ggplot(ddt,aes(x=WEIGHT, y= LENGTH, color=SPECIES)) + geom_point() + ggtitle("ZACHARY MULLER")
+plt
+```
+
+
+

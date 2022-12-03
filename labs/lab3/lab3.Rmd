@@ -1,0 +1,108 @@
+Zachary Muller
+
+# Q1
+```{r}
+getwd()
+```
+
+
+# Q2
+```{r}
+df <- read.csv("SPRUCE.csv")
+head(df)
+```
+
+# Q3
+```{r}
+with(df, plot(Height~BHDiameter, bg="Blue", pch=21, cex=1.2, xlim=c(0, 1.1 * max(BHDiameter)), ylim=c(0, 1.1 * max(Height))))
+```
+
+# Loading s20x and smoothing scatter
+```{r}
+library(s20x)
+layout(matrix(1:3, nr = 3 , nc = 1, byrow = T,))
+trendscatter(Height~BHDiameter, f = 0.5, data = df)
+trendscatter(Height~BHDiameter, f = 0.6, data= df)
+trendscatter(Height~BHDiameter, f = 0.7, data = df)
+```
+
+## Using lm to make a linear model object
+```{r}
+df.lm <- lm(Height~BHDiameter, data = df)
+plot(Height~BHDiameter, data = df)
+abline(df.lm)
+```
+
+- I think the straight line is fairly redundant. It is easy to see the trend that this data is following.
+
+
+
+# Q4
+```{r}
+layout(matrix(1:4, nr = 2, nc = 2, byrow=TRUE))
+
+# Graph 1
+with(df, plot(Height~BHDiameter, bg = "Blue", pch = 21, ylim = c(0, 1.1 * max(Height)), xlim = c(0 ,1.1 * max(BHDiameter))))
+abline(df.lm)
+
+# Graph 2
+
+with(df, plot(Height~BHDiameter, bg = "Blue", pch = 21, ylim = c(0, 1.1*max(Height)), xlim = c(0, 1.1*max(BHDiameter)))
+)
+abline(df.lm)
+
+yhat = fitted(df.lm)
+#residual sum of squares
+RSS = with(df, sum((Height-yhat)^2))
+
+RSS
+
+# TODO come back to later
+```
+
+## TSS, MSS, RSS calculation 
+```{r}
+yhat = fitted(df.lm)
+TSS = with(df, sum((Height- mean(Height))^2))
+MSS = with(df, sum((yhat - mean(Height))^2))
+RSS = with(df, sum((Height - yhat)^2))
+MSS/TSS
+RSS+MSS
+TSS
+```
+
+RSS + MSS does equal TSS
+
+# Q5
+```{r}
+summary(df.lm)
+```
+- Slope: 0.4815
+
+- Intercept: 9.1468
+
+- Height = .4815 * BHDiameter + 9.1468
+
+## Prediction
+```{r}
+predict(df.lm)
+```
+
+- 15: 18.7763
+
+- 18: 11.9394
+
+- 20: 19.1134
+
+# Task 6
+```{r}
+library(ggplot2)
+g = ggplot(df, aes(x = BHDiameter, y = Height, colour = BHDiameter))
+g=g + geom_point() + geom_line() + geom_smooth(method = "lm")
+g + ggtitle("Height vs Diameter")
+```
+
+
+# Task 7 
+
+- I couldn't finish this. 

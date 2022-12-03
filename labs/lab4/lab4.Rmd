@@ -1,0 +1,169 @@
+# Zachary Muller Lab 4
+
+# Q1
+```{r}
+getwd()
+```
+
+# Q2
+```{r}
+spruce.df <- read.csv("SPRUCE.csv")
+tail(spruce.df)
+```
+
+# Q3 
+
+## Lowess Smoother Plot
+```{r}
+library(s20x)
+trendscatter(Height~BHDiameter, f = 0.5, data = spruce.df)
+
+```
+
+
+## Linear Model 
+```{r}
+# Now make the linear model
+spruce.lm=lm(Height~BHDiameter,data=spruce.df)
+```
+
+## Residuals & Fitted
+```{r}
+height.res <- resid(spruce.lm)
+height.fit <- fitted(spruce.lm)
+```
+
+## Plot and Compare 
+```{r}
+plot(height.res, height.fit)
+```
+
+## Plot using Trendscatter
+```{r}
+trendscatter(height.res, height.fit)
+```
+
+- The shape of te new trendscatter looks a lot like a mountain to me. The curve made by the earlier plot does not level out or dip back down. It rises from left to right.
+
+## Residual Plot
+```{r}
+plot(spruce.lm, which =1)
+normcheck(spruce.lm,shapiro.wilk = TRUE)
+```
+
+- P value = 0.29
+
+
+# Task 4
+```{r}
+quad.lm=lm(Height~BHDiameter + I(BHDiameter^2),data=spruce.df)
+plot(Height~BHDiameter, data= spruce.df) # Fresh scatter
+myplot=function(x){
+  0.86089580 +1.46959217*x  -0.02745726*x^2
+}
+
+curve(myplot, lwd=2, col="steelblue",add=TRUE) # Quadratic Cruve
+quad.fit = fitted(quad.lm)
+plot(quad.lm, which=1) # Plot of resid vs fitted
+normcheck(quad.lm,shapiro.wilk = TRUE) # P value
+```
+
+- The P value is 0.684, and we can see that there is a more straight line and could apply the straight line test. 
+
+# Task 5
+```{r}
+summary(quad.lm)
+```
+
+## Bhat1, Bhat2, Bat3: BHx
+- BH1: 0.860896
+
+- BH2: 1.469592
+
+- BH3: -0.027457
+
+## Interval Estimates
+```{r}
+ciReg(quad.lm)
+```
+
+## Eq of fitted line 
+
+- y = 0.8609+1.4696x-.0275x^2
+
+## 15, 18, 20 predict
+```{r}
+predict(spruce.lm, data.frame(BHDiameter = c(15,18,20)))
+```
+
+- Quad had higher predictions
+
+
+## What does multiple R squared mean in this case?
+
+- The percentage of variation this is caused by an indepedent variable in the data. 
+
+## Most variety in height
+
+- quad.lm
+
+
+## ANOVA
+```{r}
+anova(spruce.lm)
+anova(quad.lm)
+```
+
+
+## RSS, MSS, TSS, MSS/TSS
+
+```{r}
+height.qfit=fitted(quad.lm)
+TSS = with(spruce.df, sum((Height-mean(Height))^2))
+TSS
+MSS = with(spruce.df, sum((height.qfit-mean(Height))^2))
+MSS
+RSS=with(spruce.df, sum((Height-height.qfit)^2))
+RSS
+
+MSS/TSS
+```
+
+
+# Task 6
+```{r}
+cooks20x(quad.lm)
+```
+
+## What is Cooks distance?
+
+- Cooks Distance is a commonly used estimate of the influence of a data point when performing a least-squares regression analysis
+
+- Cooks distance is pretty high 18, 21, 24 observation numbers 
+
+## Quad2 lm and remove highest cooks distnace 
+```{r}
+quad2.lm=lm(Height~BHDiameter + I(BHDiameter^2) , data=spruce.df[-24,])
+summary(quad2.lm)
+summary(quad.lm)
+```
+
+- The change was apparent in the summary but it was not a very drastic change.
+ 
+ 
+# Task 7
+
+
+# Task 8 
+```{r}
+library(packagedeal)
+line = packagedeal::funky(10)
+line
+```
+
+- Outputs a number from a formula that we used for this lab. 
+
+ 
+ 
+ 
+ 

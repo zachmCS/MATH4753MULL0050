@@ -1,0 +1,307 @@
+---
+title: "MATH 4753 Project 2"
+author: "Zachary Muller"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    code_folding: show
+    csl: biomed-central.csl
+    df_print: paged
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    number_sections: yes
+    theme: journal
+    toc: yes
+    toc_float: yes
+  word_document:
+    toc: yes
+    toc_depth: 4
+  pdf_document:
+    df_print: kable
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    highlight: tango
+    toc: yes
+    toc_depth: 4
+bibliography: project.bib
+abstract: This project is all about applications of SLR to real data using R
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(leaflet)
+library(dplyr)
+```
+
+# Introduction
+The data we will be using is the "OCEANTEMP.CSV". This data was collected by the Environmental Protection Agency in 
+an effort to determine the potential impact on marine life in areas that could host a nuclear power plant. The EPA has simulated ocean environments to test out different fish and temperatures. 
+
+![](header-coastal-nuclear-plants.jpg)
+
+```{r map, echo=FALSE, fig.align='center'}
+leaflet() %>%
+  setView(lat=38.892140, lng=-77.028220, zoom= 16) %>% 
+  addTiles() %>%
+  addMarkers(lat=38.892140, lng=-77.028220, popup="EPA") 
+```
+
+## What are the variables?
+
+```{r Ocean Temp}
+oce <- read.csv("OCEANTEMP.csv")
+
+data(oce)
+head(oce)
+names(oce)
+```
+
+### TEMP/Temperatue
+
+This variable represents the temperature of the simulated ocean environments. It is recorded in Fehreinheit, and the EPA has provided 4 different environments with varying temperatures. 
+
+```{r}
+table(oce$TEMP)
+```
+
+### Weight
+
+This variable represents the weight, in ounces, of the fish that are in the simulated environments. 
+
+```{r}
+table(oce$WEIGHT)
+```
+
+#### Add Margins
+
+```{r}
+addmargins(table(oce$WEIGHT))
+```
+
+### Weight VS Temperature
+
+```{r}
+
+library(ggplot2)
+ggplot(oce, aes(x=TEMP, y=WEIGHT)) + geom_point()
+```
+
+## How was the data collected?
+
+The data was collected by the EPA using simulated environments that are configured for certain species of fish. The EPA used a different temperature at each of the environments. The environments are identical in every way possible, except from the temperatures. 6 months after the fish have been placed into their environments, they are weighed. 
+
+## What is the story behind the data?
+
+Nuclear power plants have many effects on the environments they are in. They require lots of manpower, resources, space, and it has real-time, dynamic effects on it's environment such as heating of water around it, releasing steam and other chemicals into the air, etc. The EPA is working to determine the magnitude of these effects and they are observing it within fish. 
+
+## Why was it gathered?
+
+The data was gathered to determine some of the environmental effects/correlation of whether temperature changes in the ocean's water caused by a nuclear power plant will have a significant effect on the animal life in the region. 
+
+## What is my interest in the data?
+
+As an engineering student, I am always intrigued by the ethics of engineering. In this problem we are analyzing the effects that industrialization has on the environment. This is one of humanities largest challenges right now with global warming, climate change, reducing emissions, etc. Studies like this help preserve species and assists humans in creating/managing better environments for the animals we share this world with. 
+
+## The problem I am trying to solve is
+
+I am trying to solve if their is a correlation, or non-correlation, between the weight of fish in areas with higher water temperatures due to power plants, compared to those that reside in normal, cooler water temperature areas.  
+
+[](520004dd04ab0-48-02.jpg)
+
+# Theory needed to carry out SLR
+
+To prove that the data has a linear relationship denoted by the formula below, we must make 3 assumptions. 
+  
+$y_i = \beta_0 + \beta_1x_i + \epsilon_I$
+
+One being that there must be linearity between two variables, the residuals should be a normal distribution, and the residual variance should remain constant. 
+
+## Check for linearity between two variables.
+
+There must be a linear relationship between temperature and weight. 
+
+## Check for the normality of errors
+
+The residuals should have normal distribution. 
+
+## Check for the mean of zero, and constant variances. 
+
+The residual variance should remain constant. 
+
+# Validity with mathematical expressions
+
+## Checks on validity
+
+### Straight trend line  
+
+#### Use trendscatter
+
+```{r}
+library(s20x)
+trendscatter(oce$TEMP,oce$WEIGHT,xlab = "Temperature of water", ylab= "Weight of Fish")
+```
+
+The scatter indicates a possible weak negative trend. There are a few outliers that make it challenging to assess, but, looking at it closely, you can see that as the temperature increases there is a slight decrease in the weight of the fish. 
+
+### Errors distributed normally
+
+$$\epsilon_i \sim N(0,\sigma^2)$$
+
+I will use Shapiro Wilk test to determine that the errors are distributed normally. We must have a output p value that is greater than 0.05 to prove 95% confidence. 
+
+#### Shapiro-wilk
+
+```{r}
+normcheck(lm(oce$WEIGHT~oce$TEMP),shapiro.wilk = TRUE)
+```
+
+As the P value is > .05 the null hypothesis can be accepted, and we can say that our errors are evenly distributed. 
+
+### Constant variance
+
+#### Residual vs fitted values
+
+```{r}
+plot(residuals(lm(oce$WEIGHT~oce$TEMP)),fitted(lm(oce$WEIGHT~oce$TEMP)))
+```
+
+#### Trendscatter on Residual Vs Fitted
+
+```{r}
+trendscatter(residuals(lm(oce$WEIGHT~oce$TEMP)),fitted(lm(oce$WEIGHT~oce$TEMP)))
+```
+
+```{r}
+plot(lm(oce$WEIGHT~oce$TEMP), which=1)
+```
+
+One can easily see that there is a huge outlier in this data set, but aside from that, the data is pretty consistent with each other and evenly distributed. 
+
+### Zero mean value of $\epsilon$
+
+```{r}
+t.test(residuals(lm(oce$WEIGHT~oce$TEMP),NULL=0))
+```
+
+### Independence of data
+
+We can see from the t.test and plots that our data is independent of each other.
+
+# Model Selected if you compared models
+
+## Use adjusted $R^2$ 
+
+$$R_{adj}^2 =$$
+
+```{r}
+plot(lm(oce$WEIGHT~oce$TEMP))
+
+summary(lm(oce$WEIGHT~oce$TEMP))
+```
+
+# Analysis of the data
+
+## Make sure you include many great plots
+
+The plots have been included below. 
+
+## Add the trend to the data
+
+```{r}
+library(ggplot2)
+plt = ggplot(oce, aes(x=TEMP, y=WEIGHT, color = TEMP)) + geom_point() + geom_smooth(method="lm") 
+plt
+```
+
+## Summary lm object
+
+```{r}
+summary(lm(oce$WEIGHT~oce$TEMP))
+```
+
+$ \beta_0 = 24.3930$
+$ \beta_1 = -0.1029$
+
+Our p value is greater than 0.05, so we can accept the null hypothesis. 
+
+### Interpretation of all tests
+
+$y_i = \beta_0 + \beta_1x_i + \epsilon_I$
+
+Our tests have done us well. The Shapiro Wilk test proved that we have normal distribution of the errors. The t test proved that the mean of our errors are (really close to) zero and that our data similarities. Additionally, we had good (straightish) trend lines, and we can eliminate the error variable. 
+
+$y_i = \beta_0 + \beta_1 * x_i$
+
+which can be replaced with
+
+$- 0.1029x_i + 24.3930 = \hat y$
+
+### Interpretation of multiple R squared
+
+Our multiple R squared value is pretty low. This means that our indepedent variable, temperature, does not have much affect on our data. I agree with this, as we have seen that weight only slightly decreases as the temperature goes up. 
+
+### Interpretation of all point estimates
+
+beta 0 = 24.3930
+beta 1 = -0.1029
+
+These were taken directly from the output of summary()
+
+## Calculate cis for $\beta$ parameter estimates
+
+$\beta ci = \beta +_- t*(sd)$
+
+### Beta0 and beta1
+
+$B0 = [24.3930-(2.710*9.0014),24.3930+(2.710*9.0014)]$
+$B1 = [-0.1029-(-0.506*0.2036) ,-0.1029+(-0.506*0.2036 )]$
+
+### Use of `predict()`
+
+```{r}
+predict(lm(oce$WEIGHT~oce$TEMP), data.frame(TEMP = c(50,100,150,200)))
+```
+
+### Use of `ciReg()`
+
+```{r}
+ciReg(lm(oce$WEIGHT~oce$TEMP))
+```
+
+### Check on outliers using cooks plots
+
+
+```{r}
+len = length(oce$TEMP)
+cd = cooks.distance(lm(oce$WEIGHT~oce$TEMP))
+color = ifelse(cd>4/len, "Blue","Black")
+
+plot(cd, col = color)
+```
+
+There is one major outlier which can easily be seen from the cooks plot. I will not worry about this too much as it is the only real outlier that we have. 
+
+# Conclusion
+
+There is not a very definite conclusion to make regarding this experiment, but one can see that there is a slight relationship between water temperature and fish size. As the water gets warmer, fish have been smaller. This is the trend we are seeing, but I do not believe this trend/relationship is 100% true. This experiment worked with limited data, and I believe that for us to make a valid decision, we need more fish to test against. Additionally, it may only be that this specific fish decreases in size, where others may increase. 
+
+## Answer your research question
+
+To answer the question, I do not believe nuclear power plants have much effect on the marine life size in the surrounding area. As mentioned earlier, I think that we need more data to make a clear decision and have it supported. We can make a decision now, but it is not very concrete as our sample size is pretty small. 
+
+## Suggest ways to improve model or experiment
+
+Ways to improve this experiment is to broaden the ranges of the experiment. More fish, more temperature readings, different species of fish, etc. More fish will help prove/solidify our conclusion, while having more temperature readings and different species of fish will allow for us to find more specific correlations, or different relationships that we wouldn't have found previously. 
+
+# References
+
+Rajeev, M., Sushmitha, T.J., Aravindraja, C. et al. Thermal discharge-induced seawater warming alters richness, community composition and interactions of bacterioplankton assemblages in a coastal ecosystem. Sci Rep 11, 17341 (2021). https://doi.org/10.1038/s41598-021-96969-2
+
+Human activities. EMODnet Human Activities. (n.d.). Retrieved December 2, 2022, from https://www.emodnet-humanactivities.eu/blog/?p=1118 
+
+
+
+
+

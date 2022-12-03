@@ -1,0 +1,371 @@
+---
+title: "Ass3"
+author: "Zachary Nuller"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Q1
+
+- 2 minutes == 120 seconds, set rate to 1/95
+
+## A
+
+```{r}
+1 - pexp(120, 1/95)
+```
+
+## B
+
+```{r}
+df <- read.csv("PHISHING.CSV")
+(mean(df$INTTIME)-95)/95
+(var(df$INTTIME)-9025)/9025
+```
+
+
+The mean and variation show us that is follows an exponential disitrubition for beta = 95
+
+# Q2
+
+## A
+
+```{r}
+alpha = 3
+beta = 0.07 
+
+alpha * beta
+
+alpha * (beta * beta)
+```
+
+## B
+
+- No, you would not expect a value that high from our gamma distribution. 3STD should gives us a range to .57mil. .6 mil is just outside of our range, and is an outlier. It is not expected to have that much water. 
+
+
+# Q3
+
+## A
+
+$mean_a = 2*2 = 4$
+
+$mean_b = 1*4 = 4$
+
+## B
+
+$sigma_a = 2*2^2 = 8$
+
+$sigma_b = 1*4^2 = 16$
+
+## C
+
+```{r}
+pgamma(1,2,1/2)
+pgamma(1,1,1/4)
+```
+
+B is much more likely to cause a reaction as B is at roughly 22%, and A is at roughly 9%.
+
+
+# Q4 
+
+## A
+
+```{r}
+pweibull(2,2,2)
+```
+
+
+## B
+
+$2*.88623 = 1.77246$
+
+$4(1-0.88623^2) = .8583$
+
+## C
+
+```{r}
+pweibull(3.62546,2,2) - pweibull(-0.08054,2,2)
+```
+
+The probability is .962
+
+## D
+
+
+```{r}
+1-pweibull(6,2,2)
+```
+
+- Highly unlikely. 
+
+# Q5
+
+## A
+
+$mean=2/11 = .18182$ 
+
+$variance=18/{{11^2(11)}} = 0.01240$
+
+## B
+
+```{r}
+1-pbeta(.4,2,9)
+```
+
+## C
+
+- Can use pbeta again to find P(<=1)
+
+```{r}
+pbeta(.1, 2, 9)
+```
+
+
+# Q6
+
+## A
+
+- alpha = 2, beta = 16
+
+## B
+
+$4*.88623 = 3.54492$
+
+$16(1-.88623^2)=3.4335$
+
+
+
+## C
+
+- Can use pweibull to calculate to find the probability that a chip will not fail. 
+
+```{r}
+1-pweibull(6,2,4)
+```
+
+# Q7
+
+## A
+
+$p(x, y) = \frac{1}{36}$ 
+
+## B
+$P(X=1) = p_1(1) = 1/36 * 6 = 1/6$
+
+$p_1(X) = 1/6$
+
+$P(Y=1) = p_2(1) = 1/36 * 6 = 1/6$
+
+$p_2(Y) = 1/6$
+
+## C
+$p1(x|y) = (1/36)/(1/6) = 1/6$
+
+$p2(x|y) = (1/36)/(1/6) = 1/6$
+
+
+## D
+
+- x and y are independent because the result of the other event does not affect the result of the event at hand. 
+
+
+# Q8
+
+## A
+
+```{r}
+time1<- c(1/7,2/7,1/7)
+time2<- c(0,0,2/7)
+time3<- c(0,0, 1/7)
+time1
+time2
+time3
+```
+
+## B
+
+```{r}
+time1<- c(1/7,2/7,1/7)
+time2<- c(0,0,2/7)
+time3<- c(0,0, 1/7)
+time1
+time2
+time3
+
+c(time1[1]+time2[1]+time3[1],time1[2]+time2[2]+time3[2],time1[3]+time2[3]+time3[3])
+```
+
+
+## C
+
+```{r}
+time1<- c(1/7,2/7,1/7)
+time2<- c(0,0,2/7)
+time3<- c(0,0, 1/7)
+time1 = c(time1,sum(time1[1],time1[2],time1[3]))
+time2 = c(time2,sum(time2[1],time2[2],time2[3]))
+time3 = c(time3,sum(time3[1],time3[2],time3[3]))
+time1
+time2
+time3
+```
+
+## D
+
+- n/a
+
+# Q9
+
+## A
+
+$f_2(y)= \int_y^{2y}f(x,y)dx $
+
+$= \frac{e^{-y/10}}{10y}$
+
+## B
+
+- The expected value is beta. Beta is 10 for our problem, therefore the expected value is 10. 
+
+# Q10
+
+## A
+$\frac{cxe^{-x^2}}{-2x}$ from 0 to inf $=1$
+
+
+$0 - \frac{ce^{-0^2}}{-2} = 1$
+$c/2$ = 1
+
+$c=2$
+
+## B
+
+$2xe^{-x^2}/{-2x}$ from [0, inf] = 1
+
+$0 - 2e^{-0^2}/{-2}$ = 1
+
+## C
+
+$f_1(x)=1$
+
+$f_2(y|x) = 2e^{-x^2}$
+
+# Q11
+
+- The covariance of X,Y = E(XY) - E(X)E(Y)
+
+- E(XY) = 0, so COV(X,Y) = 0. 
+
+- Y is dependent on X. If x = 2, Y can only be = X or = -X.
+
+# Q12
+
+## A
+
+$E(\bar{Y}) = \frac{a + b}{2} = \frac{(1 + 3)}{2} = 2$
+
+
+## B
+
+$ var(\bar{y}) = \frac{1/3}{\sqrt{60}} = 0.005556$
+
+## C
+
+- This puppy has a bell shape to it. We have over 30 samples, so our population is more than enough for the CLT to be applicable. 
+
+## D
+
+- n/a
+
+## E
+
+- n/a
+
+# Q13
+
+## A
+
+- P(Y<=1) = P(Z<-2.9668)
+
+```{r}
+pnorm(-2.9668)
+```
+
+## B
+
+- P(Y >= 11) = P(Z > 1.1410)
+
+```{r}
+1-pnorm(1.1410)
+```
+
+## C
+
+
+```{r}
+pbinom(1,20,.4)
+1-pbinom(10,20,.4)
+```
+
+# Q14
+
+## A
+
+```{r}
+df <- read.csv("LEADCOPP.csv")
+
+t.test(df$LEAD, conf.level = 0.99)
+```
+
+## B
+```{r}
+t.test(df$COPPER,conf.level = 0.99)
+```
+
+## C
+
+- 99% of lead falls within [-1.1478, 6.919]
+
+- 99% of copper falls within [0.1518, 0.6647]
+
+## D
+
+- 99% of copper and lead samples are within our interval. 
+
+# Q15
+
+```{r}
+df <- read.csv("SOLARAD.csv")
+
+with(df, t.test(STJOS, IOWA, paired=TRUE, conf.level = 0.95))
+```
+
+- Between 156.8193 and 239.1807.
+
+
+# Q16
+
+## A
+
+```{r}
+df <- read.csv("DIAZINON.csv")
+
+with(df, t.test(DAY, NIGHT, paired=TRUE, conf.level = 0.90))
+```
+
+## B
+
+- The assumption is that the data has a normal distribution. 
+
+## C
+
+- There is always some difference. 

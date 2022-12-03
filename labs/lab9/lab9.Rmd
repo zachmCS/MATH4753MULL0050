@@ -1,0 +1,322 @@
+---
+title: "lab9"
+author: "Zachary Muller"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Q1
+```{r}
+getwd()
+```
+
+# Q2
+
+- A will take a sample that is of size = iter * n, from data held in x with replacement and store the data in y
+
+- B forms a condfidence interval.
+
+- Equal probability sampling is necessary to have a normal distribution.
+
+```{r}
+set.seed(35)
+sam=round(rnorm(20,mean=10,sd=4),2)
+unique(sample(sam,20,replace=TRUE) )
+unique(sample(sam,20,replace=TRUE) )
+unique(sample(sam,20,replace=TRUE) )
+unique(sample(sam,20,replace=TRUE) )
+unique(sample(sam,20,replace=TRUE) )
+```
+
+- We can see that we are getting less than 20 unique values and this is due to the replacement of values when they are drawn. 
+
+```{r}
+unique(sample(sam,20,replace=FALSE) )
+unique(sample(sam,20,replace=FALSE) )
+unique(sample(sam,20,replace=FALSE) )
+unique(sample(sam,20,replace=FALSE) )
+unique(sample(sam,20,replace=FALSE) )
+```
+
+- We know can see 20 values because we are not replacing anything. 
+
+```{r}
+#sample(sam, 21, replace=FALSE)
+```
+
+- The code does not run because we are requesting a sample size larger than the population, and we are not replacing anything. 
+
+# Q3
+
+```{r}
+myboot2<-function(iter=10000,x,fun="mean",alpha=0.05,cx=1.5,...){  #Notice where the ... is repeated in the code
+n=length(x)   #sample size
+
+y=sample(x,n*iter,replace=TRUE)
+rs.mat=matrix(y,nr=n,nc=iter,byrow=TRUE)
+xstat=apply(rs.mat,2,fun) # xstat is a vector and will have iter values in it 
+ci=quantile(xstat,c(alpha/2,1-alpha/2))# Nice way to form a confidence interval
+# A histogram follows
+# The object para will contain the parameters used to make the histogram
+para=hist(xstat,freq=FALSE,las=1,
+main=paste("Histogram of Bootstrap sample statistics","\n","alpha=",alpha," iter=",iter,sep=""),
+...)
+
+#mat will be a matrix that contains the data, this is done so that I can use apply()
+mat=matrix(x,nr=length(x),nc=1,byrow=TRUE)
+
+#pte is the point estimate
+#This uses whatever fun is
+pte=apply(mat,2,fun)
+abline(v=pte,lwd=3,col="Black")# Vertical line
+segments(ci[1],0,ci[2],0,lwd=4)      #Make the segment for the ci
+text(ci[1],0,paste("(",round(ci[1],2),sep=""),col="Red",cex=cx)
+text(ci[2],0,paste(round(ci[2],2),")",sep=""),col="Red",cex=cx)
+
+# plot the point estimate 1/2 way up the density
+text(pte,max(para$density)/2,round(pte,2),cex=cx)
+
+invisible(list(ci=ci,fun=fun,x=x))# Some output to use if necessary
+}
+```
+
+```{r}
+# rnorm
+set.seed(39)
+sam = rnorm(25,mean=25,sd=10)
+mean(sam)
+catch <- myboot2(sam,iter = 10000, alpha = .05)
+
+#rchisq
+set.seed(30)
+sam = rchisq(20,df=3)
+mean(sam)
+catch <- myboot2(sam,iter = 10000, alpha = .05)
+
+#rgamma
+set.seed(40)
+sam = rgamma(30,shape=2, scale=3)
+mean(sam)
+catch <- myboot2(sam,iter = 10000, alpha = .05)
+
+#rbeta
+set.seed(10)
+sam = rbeta(20, shape1=3, shape2=4)
+mean(sam)
+catch <- myboot2(sam,iter = 10000, alpha = .05)
+```
+
+- The point estimate value is the population value but rounded.
+
+- Yes the population value is in each interval. 
+
+```{r}
+# rnorm
+set.seed(39)
+sam = rnorm(25,mean=25,sd=10)
+mean(sam)
+catch <- myboot2(sam,iter = 10000, alpha = .2)
+
+#rchisq
+set.seed(30)
+sam = rchisq(20,df=3)
+mean(sam)
+catch <- myboot2(sam,iter = 10000, alpha = .2)
+
+#rgamma
+set.seed(40)
+sam = rgamma(30,shape=2, scale=3)
+mean(sam)
+catch <- myboot2(sam,iter = 10000, alpha = .2)
+
+#rbeta
+set.seed(10)
+sam = rbeta(20, shape1=3, shape2=4)
+mean(sam)
+catch <- myboot2(sam,iter = 10000, alpha = .2)
+```
+
+# Q4
+```{r}
+myboot2<-function(iter=10000,x,fun="mean",alpha=0.05,cx=1.5,...){  #Notice where the ... is repeated in the code
+n=length(x)   #sample size
+
+y=sample(x,n*iter,replace=TRUE)
+rs.mat=matrix(y,nr=n,nc=iter,byrow=TRUE)
+xstat=apply(rs.mat,2,fun) # xstat is a vector and will have iter values in it 
+ci=quantile(xstat,c(alpha/2,1-alpha/2))# Nice way to form a confidence interval
+# A histogram follows
+# The object para will contain the parameters used to make the histogram
+para=hist(xstat,freq=FALSE,las=1,
+main=paste("Histogram of Bootstrap sample statistics","\n","alpha=",alpha," iter=",iter,sep=""),
+...)
+
+#mat will be a matrix that contains the data, this is done so that I can use apply()
+mat=matrix(x,nr=length(x),nc=1,byrow=TRUE)
+
+#pte is the point estimate
+#This uses whatever fun is
+pte=apply(mat,2,fun)
+abline(v=pte,lwd=3,col="Black")# Vertical line
+segments(ci[1],0,ci[2],0,lwd=4)      #Make the segment for the ci
+text(ci[1],0,paste("(",round(ci[1],2),sep=""),col="Red",cex=cx)
+text(ci[2],0,paste(round(ci[2],2),")",sep=""),col="Red",cex=cx)
+
+# plot the point estimate 1/2 way up the density
+text(pte,max(para$density)/2,round(pte,2),cex=cx)
+
+invisible(list(ci=ci,fun=fun,x=x, xstat=xstat))# Some output to use if necessary
+}
+```
+
+```{r}
+sam <- c(1,1,1,2,2,2,2,3,3,4,4)
+booty <- myboot2(x=sam, fun="median")
+```
+
+- Interval is [1, 3]
+
+# Q5
+```{r}
+set.seed(39)
+sam = rnorm(25, mean=25, sd=10)
+
+norms = myboot2(x=sam, fun=function(x) {mean(x) / median(x)}, alpha = 0.05, xlab="Mean(x)/Median(x)", col="Blue")
+
+set.seed(30)
+sam = rchisq(20,df=3)
+
+chisqs = myboot2(x=sam, fun=function(x) {mean(x) / median(x)}, alpha = 0.05, xlab="Mean(x)/Median(x)", col="Purple")
+
+set.seed(40)
+sam = rgamma(30,shape=2, scale=3)
+
+gammas = myboot2(x=sam, fun=function(x) {mean(x) / median(x)}, alpha = 0.05, xlab="Mean(x)/Median(x)", col="Cyan")
+
+set.seed(10)
+sam= rbeta(20, shape1=3, shape2=4)
+
+betas = myboot2(x=sam, fun=function(x) {mean(x) / median(x)}, alpha = 0.05, xlab="Mean(x)/Median(x)", col="Red")
+
+
+
+set.seed(39)
+sam = rnorm(25, mean=25, sd=10)
+
+norms = myboot2(x=sam, fun=function(x) {mean(x) / median(x)}, alpha = 0.3, xlab="Mean(x)/Median(x)", col="Cyan")
+
+set.seed(30)
+sam = rchisq(20,df=3)
+
+chisqs = myboot2(x=sam, fun=function(x) {mean(x) / median(x)}, alpha = 0.3, xlab="Mean(x)/Median(x)", col="Red")
+
+set.seed(40)
+sam = rgamma(30,shape=2, scale=3)
+
+gammas = myboot2(x=sam, fun=function(x) {mean(x) / median(x)}, alpha = 0.3, xlab="Mean(x)/Median(x)", col="Brown")
+
+set.seed(10)
+sam= rbeta(20, shape1=3, shape2=4)
+
+betas = myboot2(x=sam, fun=function(x) {mean(x) / median(x)}, alpha = 0.3, xlab="Mean(x)/Median(x)", col="Purple")
+```
+
+
+# Q6
+```{r}
+?distributions
+```
+
+```{r}
+# Poisson Poisson Poisson
+samp = rpois(20, lambda = 4)
+
+meansbooty <- myboot2(samp, iter=10000, fun="mean", alpha=.2)
+
+varsbooty <- myboot2(samp, iter=10000, fun="var", alpha=.2)
+
+# WEIB
+samp = rweibull(20, scale=2, shape=4)
+
+meansbooty <- myboot2(samp, iter=10000, fun="mean", alpha=.2)
+
+varsbooty <- myboot2(samp, iter=10000, fun="var", alpha=.2)
+
+
+# CAUCHY CAUCHY CAUCHY
+samp = rcauchy(20, location=2, scale=3)
+
+meansbooty <- myboot2(samp, iter=10000, fun="mean", alpha=.2)
+
+varsbooty <- myboot2(samp, iter=10000, fun="var", alpha=.2)
+
+# exponential :(
+samp = rexp(20)
+
+meansbooty <- myboot2(samp, iter=10000, fun="mean", alpha=.2)
+
+varsbooty <- myboot2(samp, iter=10000, fun="var", alpha=.2)
+```
+
+# Q7
+```{r}
+set.seed(68)
+sam=rnorm(20,mean=10,sd=4)
+myboot2(sam,iter=10000, fun="sd",alpha=.05)
+myboot2(sam,iter=10000, fun="median",alpha=.05)
+myboot2(sam,iter=10000,fun="mean",alpha=.05)
+```
+
+# Q8
+```{r}
+df <-read.csv("FATAL.csv")
+packagedeal::myboot2(x=df$Fatalities)
+```
+
+# Q9
+```{r}
+myboot2<-function(iter=10000,x,fun="mean",alpha=0.05,cx=1.5,...){  #Notice where the ... is repeated in the code
+n=length(x)   #sample size
+
+y=sample(x,n*iter,replace=TRUE)
+rs.mat=matrix(y,nr=n,nc=iter,byrow=TRUE)
+xstat=apply(rs.mat,2,fun) # xstat is a vector and will have iter values in it 
+ci=quantile(xstat,c(alpha/2,1-alpha/2))# Nice way to form a confidence interval
+# A histogram follows
+# The object para will contain the parameters used to make the histogram
+para=hist(xstat,freq=TRUE,las=1,
+main=paste("Histogram of Bootstrap sample statistics","\n","alpha=",alpha," iter=",iter,sep=""),
+...)
+
+#mat will be a matrix that contains the data, this is done so that I can use apply()
+mat=matrix(x,nr=length(x),nc=1,byrow=TRUE)
+
+#pte is the point estimate
+#This uses whatever fun is
+pte=apply(mat,2,fun)
+abline(v=pte,lwd=3,col="Black")# Vertical line
+segments(ci[1],0,ci[2],0,lwd=4)      #Make the segment for the ci
+text(ci[1],0,paste("(",round(ci[1],2),sep=""),col="Red",cex=cx)
+text(ci[2],0,paste(round(ci[2],2),")",sep=""),col="Red",cex=cx)
+
+# plot the point estimate 1/2 way up the density
+text(pte,max(para$density)/2,round(pte,2),cex=cx)
+
+invisible(list(ci=ci,fun=fun,x=x))# Some output to use if necessary
+}
+
+set.seed(90)
+sam=rnorm(50,mean=22,sd=6)
+myboot2(sam,iter=100000, fun="sd",alpha=.45)
+myboot2(sam,iter=100000, fun="median",alpha=.45)
+myboot2(sam,iter=100000,fun="mean",alpha=.45)
+```

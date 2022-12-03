@@ -1,0 +1,258 @@
+---
+title: "Ass4"
+author: "Zachary Muller"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# 10/10 done
+
+
+
+# Q 1
+
+## A
+```{r}
+mydata <- read.csv("NZBIRDS.csv")
+samples <- sample(1:133, 35)
+sample = mydata[samples,]
+sample
+```
+
+## B
+```{r}
+
+mp <- c(-1,1)
+mean(sample$Body.Mass) + mp*qt(1-.05,34)*sd(sample$Body.Mass)/sqrt(35)
+
+```
+
+## C 
+- 95% of means of body masses will fall within our interval. (With this specific samples)
+
+## D
+
+- The interval contains 95% confidence, meaning that it will most likely contain the mu. 
+
+## E
+```{r}
+mean(sample$Egg.Length) + mp*qt(1-.05,34)*sd(sample$Egg.Length)/sqrt(35)
+```
+
+## F
+```{r}
+n1 = 38 # total THAT ARE EXTINCT
+n2 = 78 # total THAT ARE NOT EXTINCT
+
+p1hat = 21 / n1  
+q1hat = 1 - p1hat
+p2hat = 7 / n2
+q2hat = 1 - p2hat
+
+mp = c(-1,1)
+conf <- (p1hat - p2hat) + mp * qnorm(1-.05/2,0,1)*sqrt((p1hat*q1hat/n1) + (p2hat*q2hat/n2))
+conf
+```
+
+## G
+
+- Yes, the theory is supported. 
+
+# Q2
+
+```{r}
+t.test(rnorm(100,mean=1312,sd=422),rnorm(47,mean=1352,sd=271),conf.level = .90)
+```
+
+
+# Q3
+
+## A
+
+$y \sim N(0,\sigma^2)$
+
+$z = y/{\sigma} \sim N(0,1)$
+
+$g(v) = GPRIME(v) = 1/\sqrt pi \sqrt 2 ^{v^{1/2 -1 e -v/2 dy}}$
+
+
+## B
+
+$ (y/lambda)^2 $
+[0.0025,1] 
+$(y/lambda)^2$ 
+[0.0975,1]
+
+# Q4
+
+## A
+
+- The null hypothesis: $\mu = 2$ and the alternative hypothesis: $\mu \neq2$
+
+## B
+
+- T: -1.02 P: 0.322
+
+
+## C
+
+- $|T| < 2.1262$
+
+## D
+
+- P > alpha so the null hypothesis can be accepted as true.
+
+
+## E
+
+- They can both use the null hypthesis against the alternative hypothesis.
+
+# Q5
+
+## A
+
+- $N_s = 25, Mu = 15, sampleMean = 14.516, sampleSD = 12.9637$
+
+$H0: mu = 15$, h1 is opposite
+
+(xbar - mu)/S/sqrt(n) = -0.1867
+
+$alpha = .1,p = .854$
+
+From this, we can conclude that the sample is representative of all Wisconsin Lakes. 
+
+## B
+
+The likelihood is not too high.
+
+# Q6
+
+```{r}
+q6 <- read.csv("ORCHARD.csv")
+t.test(q6$CONDITION == "FOG",q6$CONDITION != "FOG",mu = 0, conf.level = .95)
+```
+
+# Q7 
+
+## B 
+
+```{r}
+turb <- read.csv("GASTURBINE.csv")
+var.test(turb[turb$ENGINE == "Traditional",]$HEATRATE,turb[turb$ENGINE == "Aeroderiv",]$HEATRATE, conf.level = .95, var.equal=T)
+```
+
+## B
+
+```{r}
+var.test(turb[turb$ENGINE=="Advanced",]$HEATRATE,turb[turb$ENGINE == "Aeroderiv",]$HEATRATE,conf.level = .95, var.equal=T)
+```
+
+# Q8
+
+## A
+
+ - H0: No significant difference in the variances at each site. 
+
+H0 = sigma^2 = sigma2^2 
+
+- H1: There is a significant different at each site. 
+
+H1 = opposite of null
+
+## B
+
+```{r}
+gob = read.csv("GOBIANTS.csv")
+head(gob)
+```
+
+- $F = S21/S22$ so
+- $F=1.0498$
+
+## C
+
+The rejection region is where
+$F > F_{\alpha/2}$,  
+being where x numerator and $x_2$ are the degrees of freedom for the numerator and denominator sample variances.
+
+Since alpha is .5, alpha/2 is .025. 
+
+- $F_{0.025} (25.25) = 2.23$ 
+- $H_0$ is rejected when F exceeds 2.23.
+
+
+## D
+
+- F = 1.0498.
+
+
+- P Value:
+
+$P(F<1.0498) = .55$
+
+$P(F>= 1.0498) = 1 -.55 = .45$
+
+$ P = 2 *.45 = .9 $
+
+## E
+
+.05 is less than the P value of .9. This is not in the rejection region so we cannot reject the hypothesis. With 95% confidence we can say there is no significant difference between two variances at the sites.
+
+## F
+
+- P value greater than 0.05 
+
+
+# Q9
+
+- The Null hypthesis is $\mu = 0$ and alternative is $\mu \neq0$
+
+```{r}
+data<- read.csv("THRUPUT.csv")
+t.test(data$HUMAN, data$AUTO, mu=0, paired = T)
+```
+
+# Q10
+
+```{r}
+## sample function
+
+set.seed(35) # This will give everyone the same sample
+sam=round(rnorm(30,mean=20,sd=3),3)
+
+########### bootstrap function ##################
+myboot<-function(iter=10000,x,fun="mean",alpha=0.05,...){  #Notice where the ... is repeated in the code
+n=length(x)   #sample size
+y=sample(x,n*iter,replace=TRUE)
+rs.mat=matrix(y,nr=n,nc=iter,byrow=TRUE)
+xstat=apply(rs.mat,2,fun) # xstat is a vector and will have iter values in it 
+ci=quantile(xstat,c(alpha/2,1-alpha/2))# Nice way to form a confidence interval
+# A histogram follows
+# The object para will contain the parameters used to make the histogram
+para=hist(xstat,freq=FALSE,las=1,
+main=paste("Histogram of Bootstrap sample statistics","\n","alpha=",alpha," iter=",iter,sep=""),
+...,col = rainbow(5))
+#mat will be a matrix that contains the data, this is done so that I can use apply()
+mat=matrix(x,nr=length(x),nc=1,byrow=TRUE)
+#pte is the point estimate
+#This uses whatever fun is
+pte=apply(mat,2,fun)
+abline(v=pte,lwd=3,col="Black")# Vertical line
+segments(ci[1],0,ci[2],0,lwd=4)      #Make the segment for the ci
+text(ci[1],0,paste("(",round(ci[1],2),sep=""),col="Red",cex=3)
+text(ci[2],0,paste(round(ci[2],2),")",sep=""),col="Red",cex=3)
+# plot the point estimate 1/2 way up the density
+text(pte,max(para$density)/2,round(pte,2),cex=3)
+return(list(ci=ci,fun=fun,x=x, t=t))# Some output to use if necessary
+}
+myboot(x=sam)
+```
+

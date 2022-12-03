@@ -1,0 +1,54 @@
+---
+title: "It's been a good ride."
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{It's been a good ride.}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(packagedeal)
+```
+
+# Introduction 
+
+This is the vignette for showing my package creation has been successful and that I've followed as intended. 
+
+# Code
+
+## Function 1
+
+### CLT Poisson
+  
+CLT will work with discrete or continuous distribution/
+
+```{r}
+df <-read.csv("FATAL.csv")
+packagedeal::myboot2(x=df$Fatalities)
+```
+
+## Function 2
+
+```{r}
+packagedeal::mysample(4, 1, 1)
+```
+
+## Function 3
+
+```{r}
+packagedeal::mymlbeta(x=rbeta(100,shape1=2,shape2=5),alpha=seq(1,4,length=100),beta=seq(2,8,length=100),lwd=2,labcex=1)
+```
+
+## Function 4 
+
+```{r}
+packagedeal::myncurve(mu=10,sigma=5)
+```
